@@ -1,29 +1,26 @@
 import OpenAI from "openai";
 
-export default async function handler(req, res) {
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
-  const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-  });
+async function run() {
+  try {
 
-  const input = req.body.input;
+    const response = await client.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "user", content: "قل مرحبًا بك كمساعد ذكي" }
+      ]
+    });
 
-  const response = await client.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: "أنت مساعد ذكي مختصر وواضح."
-      },
-      {
-        role: "user",
-        content: input
-      }
-    ]
-  });
+    console.log("AI RESPONSE:");
+    console.log(response.choices[0].message.content);
 
-  res.json({
-    output: response.choices[0].message.content
-  });
-
+  } catch (err) {
+    console.error("ERROR:");
+    console.error(err.message);
+  }
 }
+
+run();
