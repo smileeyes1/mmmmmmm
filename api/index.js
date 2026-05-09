@@ -1,13 +1,15 @@
-import OpenAI from "openai";
+const OpenAI = require("openai");
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
 
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Only POST allowed" });
+    return res.status(405).json({
+      error: "Only POST allowed"
+    });
   }
 
   try {
@@ -19,7 +21,7 @@ export default async function handler(req, res) {
       messages: [
         {
           role: "system",
-          content: "أنت مساعد ذكي مختصر وواضح"
+          content: "أنت مساعد ذكي ومختصر."
         },
         {
           role: "user",
@@ -28,15 +30,16 @@ export default async function handler(req, res) {
       ]
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       output: response.choices[0].message.content
     });
 
   } catch (err) {
 
-    res.status(500).json({
+    return res.status(500).json({
       error: err.message
     });
 
   }
-}
+
+};
