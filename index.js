@@ -1,8 +1,6 @@
 console.log("AI SYSTEM STARTED ✔");
 
-// اختبار بسيط للتأكد أن النظام يعمل
 function runSystem(input) {
-
   console.log("INPUT:", input);
 
   let output = "تم استلام الطلب: " + input;
@@ -12,5 +10,4 @@ function runSystem(input) {
   return output;
 }
 
-// تشغيل تجريبي
-runSystem("ابدأ النظام");
+runSystem("تشغيل تجريبي");
