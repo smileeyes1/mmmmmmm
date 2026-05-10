@@ -1,92 +1,175 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
+
 <head>
-  <meta charset="UTF-8">
-  <title>AI App</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>AI Chat</title>
 
   <style>
+
     body {
-      font-family: Arial;
+      margin: 0;
+      padding: 0;
       background: #0f0f0f;
+      font-family: Arial, sans-serif;
       color: white;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 700px;
+      margin: 50px auto;
       text-align: center;
-      padding: 50px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    .chat-box {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 300px;
+      text-align: right;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    .user {
+      background: #2d2d2d;
+    }
+
+    .ai {
+      background: #1f3d2a;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
     }
 
     input {
-      width: 320px;
-      padding: 12px;
-      border-radius: 8px;
+      flex: 1;
+      padding: 14px;
       border: none;
+      border-radius: 10px;
       outline: none;
+      font-size: 16px;
     }
 
     button {
-      padding: 12px 20px;
-      margin-left: 10px;
+      padding: 14px 20px;
       border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      border-radius: 10px;
       background: #4caf50;
       color: white;
-      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
     }
 
-    #output {
-      margin-top: 30px;
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      min-height: 60px;
-      width: 60%;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: right;
-      white-space: pre-wrap;
+    button:hover {
+      opacity: 0.9;
     }
+
   </style>
 </head>
 
 <body>
 
-  <h1>🧠 AI System</h1>
+  <div class="container">
 
-  <input id="input" placeholder="اكتب سؤالك هنا">
-  <button onclick="ask()">إرسال</button>
+    <h1>🧠 AI Chat</h1>
 
-  <div id="output">النتيجة ستظهر هنا...</div>
+    <div class="chat-box" id="chatBox">
+      <div class="message ai">
+        مرحبًا 👋
+        اكتب أي شيء للبدء.
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input
+        type="text"
+        id="input"
+        placeholder="اكتب رسالتك هنا..."
+      />
+
+      <button onclick="askAI()">
+        إرسال
+      </button>
+    </div>
+
+  </div>
 
   <script>
-    async function ask() {
 
-      let input = document.getElementById("input").value;
+    async function askAI() {
 
-      document.getElementById("output").innerText = "جاري التفكير...";
+      const input = document.getElementById("input");
+      const chatBox = document.getElementById("chatBox");
+
+      const message = input.value.trim();
+
+      if (!message) return;
+
+      // رسالة المستخدم
+      chatBox.innerHTML += `
+        <div class="message user">
+          ${message}
+        </div>
+      `;
+
+      // رسالة انتظار
+      const loadingId = "loading-" + Date.now();
+
+      chatBox.innerHTML += `
+        <div class="message ai" id="${loadingId}">
+          جاري التفكير...
+        </div>
+      `;
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      input.value = "";
 
       try {
 
-        let response = await fetch("/api", {
+        const response = await fetch("/api/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            input: input
+            input: message
           })
         });
 
-        let data = await response.json();
+        const data = await response.json();
 
-        document.getElementById("output").innerText =
+        document.getElementById(loadingId).innerHTML =
           data.output || data.error || "لا يوجد رد";
 
-      } catch (err) {
+      } catch (error) {
 
-        document.getElementById("output").innerText =
+        document.getElementById(loadingId).innerHTML =
           "فشل الاتصال بالسيرفر";
 
       }
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+
     }
+
   </script>
 
 </body>
